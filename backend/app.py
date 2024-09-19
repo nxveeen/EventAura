@@ -20,7 +20,7 @@ def index():
     return jsonify(data)
 
 # new user sign up -------------------------------------------------------------------------
-@app.route('/signup', methods = ['POST'])
+@app.route('/api/users/signup', methods = ['POST'])
 def signup():
     try:
         name = request.form['name']
@@ -40,12 +40,11 @@ def signup():
         db.session.commit() 
 
         return jsonify({"message":"User signed up successfully!!"}), 201
-        
-        db.session.add()
+
     except Exception as e:
         return jsonify({"error":str(e)}), 400
 
-@app.route('/login', methods = ['POST'])
+@app.route('/api/users/login', methods = ['POST'])
 def login():
     try:
         email = request.form['email']  
@@ -63,6 +62,16 @@ def login():
         return jsonify({"message": "Login successful!", "user": {"name": user.name, "email": user.email, "phone": user.phone}}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+    
+@app.route('/api/users', methods = ['GET'])
+def get_users():
+    if request.method == "GET":
+        try:
+            all_users = User.query.all()
+            users_list = [{"id":user.id, "name":user.name, "email":user.email, "phone":user.phone, "role":user.role, "created_at":user.created_at} for user in all_users]
+            return jsonify(users_list), 200
+        except Exception as e:
+            return jsonify({"message":str(e)}), 400
     
 if __name__ == '__main__':
     app.run()
