@@ -23,11 +23,14 @@ def index():
 @app.route('/api/users/signup', methods = ['POST'])
 def signup():
     try:
-        name = request.form['name']
-        email = request.form['email']
-        phone = request.form['phone']
-        password = request.form['password']
-      
+        # Expecting JSON 
+        data = request.json
+        name = data.get('name')
+        email = data.get('email')
+        phone = data.get('phone')
+        password = data.get('password')
+        role = data.get('role')
+
         # check existing user
         existing_user = User.query.filter_by(email = email).first()
         if existing_user:
@@ -35,7 +38,7 @@ def signup():
         hashed_password = generate_password_hash(password)
       
         # create new user
-        new_user = User(name=name, email=email, password=hashed_password, phone=phone)
+        new_user = User(name=name, email=email, password=hashed_password, phone=phone, role = role)
         db.session.add(new_user)
         db.session.commit() 
 
@@ -44,31 +47,43 @@ def signup():
     except Exception as e:
         return jsonify({"error":str(e)}), 400
 
-@app.route('/api/users/login', methods = ['POST'])
+@app.route('/api/users/login', methods=['POST'])
 def login():
     try:
-        email = request.form['email']  
-        password = request.form['password']
+        # Expecting JSON input
+        data = request.json  
+        email = data.get('email')
+        password = data.get('password')
 
-        # find user
-        user = User.query.filter_by(email = email).first()  
+        # Find user
+        user = User.query.filter_by(email=email).first()  
         
         if not user:
-            return jsonify({"message":"User not found!!"}), 404
+            return jsonify({"message": "User not found!"}), 404
         
+        # Check password
         if not check_password_hash(user.password, password):
-            return jsonify({"message":"Incorrect password"})
-        
-        return jsonify({"message": "Login successful!", "user": {"name": user.name, "email": user.email, "phone": user.phone}}), 200
+            return jsonify({"message": "Incorrect password!"}), 401        
+
+        return jsonify({
+            "message": "Login successful!",
+            "user": {
+                "name": user.name,
+                "email": user.email,
+                "phone": user.phone
+            }
+        }), 200
+
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+
     
 @app.route('/api/users', methods = ['GET'])
 def get_users():
     if request.method == "GET":
         try:
             all_users = User.query.all()
-            users_list = [{"id":user.id, "name":user.name, "email":user.email, "phone":user.phone, "role":user.role, "created_at":user.created_at} for user in all_users]
+            users_list = [{"id":user.id, "name":user.name, "email":user.email, "phone":user.phone, "role":user.role, "created_at":user.created_at, "pass":user.password} for user in all_users]
             return jsonify(users_list), 200
         except Exception as e:
             return jsonify({"message":str(e)}), 400
