@@ -1,8 +1,12 @@
 "use client";
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';  // Import useRouter
+import { useRouter } from 'next/navigation';
+import { useAppDispatch, useAppStore, useAppSelector } from '@/lib/hooks';
+import { increment, decrement } from '@/lib/features/counter/counterSilce';
 
 const Login = () => {
+    // const dispatch = useAppDispatch() //dispatch actions
+    // const countStore = useAppSelector(state => state.counter.value) //store
     const [formData, setFormData] = useState({
         email: '',
         password: ''
@@ -35,6 +39,7 @@ const Login = () => {
         }
     };
 
+
     return (
         <div className="login p-6 max-w-sm mx-auto bg-white rounded-lg shadow-md">
             <h2 className="text-2xl font-bold mb-4">Login</h2>
@@ -63,6 +68,8 @@ const Login = () => {
                 </div>
                 <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded">Login</button>
             </form>
+            {/* <button type="button" onClick={() => { dispatch(increment()) }} className="w-full my-3 bg-blue-500 text-white p-2 rounded">add</button>
+            <button type="button" onClick={() => { dispatch(decrement()) }} className="w-full my-3 bg-blue-500 text-white p-2 rounded">subtract</button> */}
             {message && <p className="mt-4 text-red-500">{message}</p>}
         </div>
     );

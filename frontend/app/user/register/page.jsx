@@ -1,9 +1,13 @@
 "use client"
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAppDispatch, useAppSelector, useAppStore } from "@/lib/hooks";
+import { increment, decrement } from '@/lib/features/counter/counterSilce';
 
 
 const Register = () => {
+    // const dispatch = useAppDispatch() //dispatch actions
+    // const countStore = useAppSelector((state) => state.counter.value) //store
     const router = useRouter()
     const [formData, setFormData] = useState({
         name: '',
@@ -45,6 +49,13 @@ const Register = () => {
             setMessage('Registration failed: ' + error.message);
         }
     };
+
+    // const handleClick = (e) => {
+    //     e.preventDefault()
+    //     dispatch(increment())
+    //     console.log(countStore)
+    // }
+
 
     return (
         <div className="max-w-md mx-auto p-4 shadow-md rounded-lg">
@@ -111,6 +122,7 @@ const Register = () => {
                     Register
                 </button>
             </form>
+            {/* <button type="button" onClick={handleClick} className="w-full my-3 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">counter</button> */}
             {message && <p className="mt-4 text-red-500">{message}</p>}
         </div>
     );
