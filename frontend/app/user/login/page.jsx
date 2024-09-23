@@ -1,19 +1,19 @@
 "use client";
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAppDispatch, useAppStore, useAppSelector } from '@/lib/hooks';
-import { increment, decrement } from '@/lib/features/counter/counterSilce';
+import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { decrement } from '@/lib/features/counter/counterSilce';
 
 const Login = () => {
-    // const dispatch = useAppDispatch() //dispatch actions
-    // const countStore = useAppSelector(state => state.counter.value) //store
+    const dispatch = useAppDispatch() //dispatch actions
+    const countStore = useAppSelector(state => state.counter.value) //store
     const [formData, setFormData] = useState({
         email: '',
         password: ''
     });
 
     const [message, setMessage] = useState('');
-    const router = useRouter();  // Initialize useRouter
+    const router = useRouter();
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -32,13 +32,18 @@ const Login = () => {
             console.log(response);
             if (response.status === 200) {
                 setMessage('Login successful!');
-                router.push('/dashboard');  // Redirect to dashboard or another page
+                router.push('/dashboard');
             }
         } catch (error) {
             setMessage('Login failed: ' + error.response);
         }
     };
 
+    const handleClick = (e) => {
+        e.preventDefault()
+        dispatch(decrement())
+        console.log(countStore);
+    }
 
     return (
         <div className="login p-6 max-w-sm mx-auto bg-white rounded-lg shadow-md">
@@ -68,8 +73,7 @@ const Login = () => {
                 </div>
                 <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded">Login</button>
             </form>
-            {/* <button type="button" onClick={() => { dispatch(increment()) }} className="w-full my-3 bg-blue-500 text-white p-2 rounded">add</button>
-            <button type="button" onClick={() => { dispatch(decrement()) }} className="w-full my-3 bg-blue-500 text-white p-2 rounded">subtract</button> */}
+            <button type="button" onClick={handleClick} className="w-full my-3 bg-blue-500 text-white p-2 rounded">subtract</button>
             {message && <p className="mt-4 text-red-500">{message}</p>}
         </div>
     );
